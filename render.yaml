@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: daily-stock-analysis
+    runtime: docker
+    dockerfilePath: ./docker/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # ── AI 模型（必填）──────────────────────────────────────
+      - key: GEMINI_API_KEY
+        sync: false          # 部署时 Render 会弹窗让你输入，不会暴露在代码里
+
+      # ── 自选股（必填，可部署后在 Render 后台修改）──────────────
+      - key: STOCK_LIST
+        value: 600519,000858,hk00700,AAPL,TSLA
+
+      # ── 服务端口（Render 必须用 $PORT）─────────────────────────
+      - key: PORT
+        value: "10000"
+
+      # ── 分析行为 ────────────────────────────────────────────
+      - key: REPORT_TYPE
+        value: full
+      - key: ANALYSIS_DELAY
+        value: "10"
+      - key: MAX_WORKERS
+        value: "3"
+      - key: MARKET_REVIEW_ENABLED
+        value: "true"
+      - key: SINGLE_STOCK_NOTIFY
+        value: "false"
+
+      # ── 定时任务（WebUI 模式手动触发，默认关闭）────────────────
+      - key: SCHEDULE_ENABLED
+        value: "false"
+      - key: SCHEDULE_TIME
+        value: "18:00"
+
+      # ── 推送渠道（只用 WebUI，全部留空）────────────────────────
+      - key: TELEGRAM_BOT_TOKEN
+        value: ""
+      - key: TELEGRAM_CHAT_ID
+        value: ""
+
+      # ── 新闻搜索（可选，不填则无舆情分析）──────────────────────
+      # 填了效果更好，Tavily 免费申请：https://tavily.com
+      - key: TAVILY_API_KEYS
+        value: ""
+
+      - key: DEBUG
+        value: "false"
